@@ -1,0 +1,28 @@
+description: >
+  You can use a configuration file to set more advanced options. Create a configuration file and save it as burp_config.yml in the root of your repository.
+  Values in the config file override parameters passed.
+
+  To learn more, see https://portswigger.net/burp/documentation/enterprise/integrate-ci-cd-platforms/ci-driven-nodash/create-config.
+
+  To use an environment variable for the API key pass the variable name as a parameter within ${} (see line 13) and leave the field in the config file blank.
+  To use a config file not in the root of your repository or not called burp_config.yml use the config_file_path parameter (see line 12).
+
+usage:
+  version: 2.1
+  orbs:
+    burp-suite-enterprise: portswigger/burp-suite-enterprise@<version_number>
+  jobs:
+    scan-using-config:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+            config_file_path: ./path/config_name.yml
+
+  workflows:
+    use-my-orb:
+      jobs:
+        - scan-using-config

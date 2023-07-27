@@ -1,39 +1,177 @@
-# Orb Template
+# Burp Suite Enterprise Edition CircleCI Orb
+
+[![CircleCI Build Status](https://circleci.com/gh/portSwigger-integrations/burp-suite-enterprise-circleci-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/portSwigger-integrations/burp-suite-enterprise-circleci-orb) [![CircleCI Orb Version](https://badges.circleci.com/orbs/portswigger/burp-suite-enterprise.svg)](https://circleci.com/developer/orbs/orb/portswigger/burp-suite-enterprise) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
+
+This orb enables you to easily integrate Burp Suite Enterprise Edition into your CircleCI pipeline. The orb runs Burp Scanner from a Docker container on the executor.
+On completion, it generates a JUnit XML report about any vulnerabilities that it found. 
+
+For full documentation about CI-driven scans, see [Integrating CI-driven scans](https://portswigger.net/burp/documentation/enterprise/integrate-ci-cd-platforms/ci-driven-scans).
+
+## Inputs
+
+To provide values to the container, you can specify inputs.
+
+Alternatively, you can provide values in a configuration file. If you use a configuration file, the values in that file have priority over the input values.
+
+### `enterprise_server_url`
+
+The URL supplied with your PortSwigger account.
+
+### `enterprise_api_key`
+
+The API key supplied with your PortSwigger account.
+
+### `start_url`
+
+The URL of the website you want Burp Scanner to start scans from.
+
+*You must specify the above values, either as inputs or in a configuration file.*
+
+### `report_file_path`
+
+(Optional) The output path for the scan report. This is relative to the working directory of the container.
+
+The default value is `burp_junit_report.xml`
+
+### `config_file_path`
+
+(Optional) The path to the configuration file. This path must be an absolute path.
+
+The default value is `burp_config.yml` in the container's working directory.
+
+### `fail_on_failure`
+
+(Optional) Fails the workflow if the scanner finds any vulnerability above the threshold specified in the config file.
+
+The default value is `true`
+
+*You can only specify `fail_on_failure` as an input and not in the config file.*
+
+### Using a configuration file
+
+To set more advanced options you can use a configuration file.
+Save the file as `burp_config.yml` in the root of your repository. Values in the config file override parameters passed. To learn more, see [Creating a configuration file for a CI-driven scan](https://portswigger.net/burp/documentation/enterprise/integrate-ci-cd-platforms/ci-driven-scans/create-config)
+
+Make sure you include:
+* The URL
+* The API key for your license
+* At least one start URL.
+
+## Results
+The scan container produces a JUnit XML report when the scan completes. This report includes:
+* The locations of the vulnerabilities
+* Additional information about each vulnerability
+* Links to our learning resources, with remediation advice.
+
+This report only includes vulnerability details if vulnerabilities are found by Burp Scanner. The reporting results [example below](#reporting-results) shows how to save the report.
+
+## Example usages
+
+Below are some examples of how to use the orb to run a Burp scan against our [Gin and Juice Shop](https://ginandjuice.shop) site. This is a deliberately vulnerable web application. It's designed for testing web vulnerability scanners.
+
+### Basic Usage
 
 
-[![CircleCI Build Status](https://circleci.com/gh/portSwigger-integrations/burp-suite-enterprise-circleci-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/portSwigger-integrations/burp-suite-enterprise-circleci-orb) [![CircleCI Orb Version](https://badges.circleci.com/orbs/portswigger/burp-suite-enterprise.svg)](https://circleci.com/developer/orbs/orb/portswigger/burp-suite-enterprise) [![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/portSwigger-integrations/burp-suite-enterprise-circleci-orb/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
+```
+usage:
+  version: 2.1
+  orbs:
+    burp-suite-enterprise: portswigger/burp-suite-enterprise-test@<version_number>
+  jobs:
+    basic-scan:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            start_url: "https://ginandjuice.shop"
+            enterprise_server_url: <your-enterprise-server-url>
+            # To use an environment variable for the API key 
+            # pass the variable name as a parameter (as shown below).
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
 
+  workflows:
+    use-my-orb:
+      jobs:
+        - basic-scan
+```
 
+### Reporting Results
+The examples below show how to display the vulnerability report in the **Tests** tab using [`store_test_results`](https://circleci.com/docs/configuration-reference/#storetestresults), or to store the raw .xml report as an [artifact](https://circleci.com/docs/artifacts/). CircleCI documentation for collecting test data can be found [here](https://circleci.com/docs/collect-test-data/).
 
-A project template for Orbs.
+```
+usage:
+  version: 2.1
+  orbs:
+    burp-suite-enterprise: portswigger/burp-suite-enterprise@<version_number>
+  jobs:
+    # Displays the vulnerability report in the Tests tab.
+    scan-with-test-results:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            start_url: "https://ginandjuice.shop"
+            report_file_path: <your-report-file-path>
+            enterprise_server_url: <your-enterprise-server-url>
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+        - store_test_results:
+            path: <your-report-file-path>
+    # Stores the raw .xml report as an artifact.
+    scan-store-artifact:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            start_url: "https://ginandjuice.shop"
+            report_file_path: <your-report-file-path>
+            enterprise_server_url: <your-enterprise-server-url>
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+        - store_artifacts:
+            path: <your-report-file-path>
 
-This repository is designed to be automatically ingested and modified by the CircleCI CLI's `orb init` command.
+  workflows:
+    use-my-orb:
+      jobs:
+        - scan-with-test-results
+        - scan-store-artifact
+```
 
-_**Edit this area to include a custom title and description.**_
+### Usage with a configuration file
 
----
+The example below shows how to use a configuration file for the inputs. To use an environment variable for the API key, pass the variable name as a parameter and leave the field in the config file blank. An example is shown below:
 
-## Resources
+```
+usage:
+  version: 2.1
+  orbs:
+    burp-suite-enterprise: portswigger/burp-suite-enterprise-test@<version_number>
+  jobs:
+    scan-using-config:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            # To use an environment variable for the API key pass the variable name as a
+            # parameter (as shown below) and leave the field in the config file blank.
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+            # To use a config file not in the root of your repository and/or not called
+            # burp_config.yml use the config_file_path parameter as shown below.
+            config_file_path: ./path/config_name.yml
 
-[CircleCI Orb Registry Page](https://circleci.com/developer/orbs/orb/portswigger/burp-suite-enterprise) - The official registry page of this orb for all versions, executors, commands, and jobs described.
+  workflows:
+    use-my-orb:
+      jobs:
+        - scan-using-config
+```
 
-[CircleCI Orb Docs](https://circleci.com/docs/orb-intro/#section=configuration) - Docs for using, creating, and publishing CircleCI Orbs.
+By default, if the scanner finds any issue with a severity level of `LOW` or above, it fails the workflow build (the scan container exits with a non-zero exit code).
 
-### How to Contribute
-
-We welcome [issues](https://github.com/portSwigger-integrations/burp-suite-enterprise-circleci-orb/issues) to and [pull requests](https://github.com/portSwigger-integrations/burp-suite-enterprise-circleci-orb/pulls) against this repository!
-
-### How to Publish An Update
-1. Merge pull requests with desired changes to the main branch.
-    - For the best experience, squash-and-merge and use [Conventional Commit Messages](https://conventionalcommits.org/).
-2. Find the current version of the orb.
-    - You can run `circleci orb info portswigger/burp-suite-enterprise | grep "Latest"` to see the current version.
-3. Create a [new Release](https://github.com/portSwigger-integrations/burp-suite-enterprise-circleci-orb/releases/new) on GitHub.
-    - Click "Choose a tag" and _create_ a new [semantically versioned](http://semver.org/) tag. (ex: v1.0.0)
-      - We will have an opportunity to change this before we publish if needed after the next step.
-4.  Click _"+ Auto-generate release notes"_.
-    - This will create a summary of all of the merged pull requests since the previous release.
-    - If you have used _[Conventional Commit Messages](https://conventionalcommits.org/)_ it will be easy to determine what types of changes were made, allowing you to ensure the correct version tag is being published.
-5. Now ensure the version tag selected is semantically accurate based on the changes included.
-6. Click _"Publish Release"_.
-    - This will push a new tag and trigger your publishing pipeline on CircleCI.
+You can edit your configuration file to change the threshold for exiting with a non-zero exit code.

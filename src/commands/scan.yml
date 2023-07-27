@@ -1,0 +1,39 @@
+description: >
+  Scan a URL for vulnerabilities with Burpsuite Enterprise.
+
+parameters:
+    enterprise_server_url:
+        type: string
+        description: 'The URL of your Enterprise server.'
+        default: ""
+    enterprise_api_key:
+        type: string
+        description: 'The API key that you copied when you created an API user.'
+        default: ""
+    start_url:
+        type: string
+        description: 'The URL of the website you want Burp Scanner to scan.'
+        default: ""
+    report_file_path:
+        type: string
+        description: 'The filename used for the scan report. This filepath relates to the enterprise scan container.'
+        default: burp_junit_report.xml
+    config_file_path:
+        type: string
+        description: 'The file path of your burp config file, this path must be an absolute path.'
+        default: ""
+    fail_on_failure:
+        type: boolean
+        default: true
+
+steps:
+    - run:
+          environment:
+              PARAM_ENTERPRISE_SERVER_URL: <<parameters.enterprise_server_url>>
+              PARAM_ENTERPRISE_API_KEY: <<parameters.enterprise_api_key>>
+              PARAM_START_URL: <<parameters.start_url>>
+              PARAM_REPORT_FILE_PATH: <<parameters.report_file_path>>
+              PARAM_CONFIG_FILE_PATH: <<parameters.config_file_path>>
+              PARAM_FAIL_ON_FAILURE: <<parameters.fail_on_failure>>
+          name: Run scan
+          command: <<include(scripts/run_enterprise_scan.sh)>>

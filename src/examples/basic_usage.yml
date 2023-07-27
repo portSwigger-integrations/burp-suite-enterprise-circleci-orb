@@ -1,0 +1,25 @@
+description: >
+  Below is an example of how to use the orb by running a Burp scan against our very own Gin and Juice Shop (https://ginandjuice.shop) site.
+  This is a deliberately vulnerable web application designed for testing web vulnerability scanners.
+  To use an environment variable for the API key pass the variable name as a parameter within ${} (see line 12).
+
+usage:
+  version: 2.1
+  orbs:
+    enterprise: portswigger/burp-suite-enterprise@<version_number>
+  jobs:
+    basic-scan:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            start_url: "https://ginandjuice.shop"
+            enterprise_server_url: <your-enterprise-server-url>
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+
+  workflows:
+    use-my-orb:
+      jobs:
+        - basic-scan
