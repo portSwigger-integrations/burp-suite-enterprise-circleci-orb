@@ -1,15 +1,10 @@
 version: 2.1
 
 description: >
-  Sample orb description
-# What will your orb allow users to accomplish?
-# Descriptions should be short, simple, and informative.
+  This orb allows Burp Suite Enterprise Edition customers to run a Burp vulnerability scan against a target site.
+  On completion, a JUnit XML report is generated containing information about the vulnerabilities found, where
+  they were located, additional information about the vulnerability and links to our learning resources with suggestions on how to fix them.
 
-# This information will be displayed in the orb registry and is not mandatory.
 display:
-  home_url: "https://www.example.com/docs"
-  source_url: "https://github.com/portSwigger-integrations/burp-suite-enterprise-circleci-orb"
-
-# If your orb requires other orbs, you can import them like this. Otherwise remove the "orbs" stanza.
-# orbs:
-#  hello: circleci/hello-build@0.0.5
+  home_url: "https://portswigger.net/burp/enterprise"
+  # source_url: "https://github.com/portSwigger-integrations/burp-suite-enterprise-circleci-orb"

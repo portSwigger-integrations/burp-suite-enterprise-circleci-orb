@@ -1,0 +1,44 @@
+description: >
+  Burp Suite Enterprise Edition produces a JUnit XML report of the scan on completion. This report will only include vulnerability details if vulnerabilities were found by the scanner.
+  By default, if Burp scanner finds any issue with a severity level of at least LOW and confidence at least TENTATIVE, the workflow will fail.
+  The examples below show how to display the vulnerability report in the Tests tab, or to store the raw .xml report as an artifact.
+
+usage:
+  version: 2.1
+  orbs:
+    burp-suite-enterprise: portswigger/burp-suite-enterprise@<version_number>
+  jobs:
+    # Displays the vulnerability report in the Tests tab.
+    scan-with-test-results:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            start_url: "https://ginandjuice.shop"
+            report_file_path: <your-report-file-path>
+            enterprise_server_url: <your-enterprise-server-url>
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+        - store_test_results:
+            path: <your-report-file-path>
+    # Stores the raw .xml report as an artifact.
+    scan-store-artifact:
+      machine:
+        image: ubuntu-2204:current
+      resource_class: medium
+      steps:
+        - checkout
+        - burp-suite-enterprise/scan:
+            start_url: "https://ginandjuice.shop"
+            report_file_path: <your-report-file-path>
+            enterprise_server_url: <your-enterprise-server-url>
+            enterprise_api_key: ${YOUR_API_KEY_ENV_VAR_NAME}
+        - store_artifacts:
+            path: <your-report-file-path>
+
+  workflows:
+    use-my-orb:
+      jobs:
+        - scan-with-test-results
+        - scan-store-artifact
