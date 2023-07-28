@@ -24,6 +24,7 @@ parameters:
         default: ""
     fail_on_failure:
         type: boolean
+        description: 'Fails the workflow if the scanner finds any vulnerability above the threshold specified in the config file.'
         default: true
 
 steps:
