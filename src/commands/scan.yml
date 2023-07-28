@@ -1,5 +1,5 @@
 description: >
-  Scan a URL for vulnerabilities with Burpsuite Enterprise.
+  Scan a URL for vulnerabilities with Burp Suite Enterprise Edition.
 
 parameters:
     enterprise_server_url:
