@@ -54,8 +54,7 @@ The default value is `true`
 ### Using a configuration file
 
 To set more advanced options you can use a configuration file.
-Save the file as `burp_config.yml` in the root of your repository. These values will override any that were input as parameters. To learn more, see [Creating a configuration file for a CI-driven scan](https://portswigger.net/burp/documentation/enterprise/integrate-ci-cd-platforms/ci-driven-scans/create-config)
-
+Save the file as `burp_config.yml` in the root of your repository. These values will override any that were input as parameters. To learn more, see either [Creating a configuration file for a CI-driven scan](https://portswigger.net/burp/documentation/enterprise/integrate-ci-cd-platforms/ci-driven-scans/create-config) or [Creating a configuration file for a CI-driven scan with no dashboard](https://portswigger.net/burp/documentation/enterprise/integrate-ci-cd-platforms/ci-driven-nodash/create-config).
 Make sure you include:
 * The URL
 * The API key for your license
