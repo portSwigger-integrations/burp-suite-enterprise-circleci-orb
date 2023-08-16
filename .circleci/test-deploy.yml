@@ -30,6 +30,7 @@ jobs:
           fail_on_failure: false
       - store_test_results:
           path: "burp_junit_report.xml"
+      - run: test -f "burp_junit_report.xml"
 
 workflows:
   test-deploy:
